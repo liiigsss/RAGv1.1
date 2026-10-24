@@ -9,6 +9,7 @@ models/
 .env.*
 !.env.example
 Cedar/
+pdfs - Google Sheets.pdf
 RAGv1.0系统问题.docx
 RAGv1.1系统问题.docx
 tmp/
