@@ -1,0 +1,21 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+data/index/
+data/benchmark/
+outputs/
+models/
+.env.*
+!.env.example
+Cedar/
+pdfs - Google Sheets.pdf
+RAGv1.0系统问题.docx
+RAGv1.1系统问题.docx
+tmp/
+artifact_runtime/
+.artifact_work/
+/文件/source/*.tar.gz
+/data/index_v1.2/
+~$*
+~WRL*.tmp
