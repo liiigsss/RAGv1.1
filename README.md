@@ -33,3 +33,18 @@ python -m rag_app.cli evaluate
 ## 运行范围
 
 目前是面向单机验证的本地工作台。索引、检索和结果文件保存在本机。经本轮授权，题目、检索证据、标准答案和生成答案会发送到 DeepSeek API 用于生成与评分；API 密钥保存在本机 `.env`，不写入 Excel。对敏感金融资料上线前，应再补充访问控制、日志脱敏、密钥托管、备份和部署审计。
+
+## Benchmark 数据与报告
+
+仓库包含根目录下的 `pdfs - Google Sheets.pdf` 基准输入，以及 `文件/source/LongDocURL_public.jsonl` 元数据。`benchmark-import` 会使用这两个文件生成 `data/benchmark/benchmark.jsonl` 和基准 Excel；生成文件及评测输出由 `.gitignore` 排除，可在本机重新生成。
+
+LongDocURL 原始 PDF 语料不随代码仓库分发。需要完整复现实验时，从 [LongDocURL 数据集](https://huggingface.co/datasets/dengchao/LongDocURL) 下载 `pdf_files.tar.gz`，将原始 PDF 放入项目根目录的 `Cedar` 文件夹。当前导入器读取 `Cedar` 目录下的 PDF 文件。
+
+```powershell
+python -m rag_app.cli benchmark-import
+python -m rag_app.cli ingest
+python -m rag_app.cli index
+python -m rag_app.cli evaluate
+```
+
+`evaluate` 使用 Python 和项目依赖中的 `openpyxl` 生成 `outputs/*_accuracy_v1.1.xlsx`，不需要 Node.js、Codex 运行时或 `.artifact_work` 脚本。原始评测续跑记录也保存在 `outputs` 中。

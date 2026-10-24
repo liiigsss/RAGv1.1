@@ -1,23 +1,13 @@
 from __future__ import annotations
 
 import argparse
-import subprocess
-from pathlib import Path
 
 from .benchmark import build_benchmark
 from .config import settings
 from .ingest import build_chunks
 from .pipeline import ask, build_index, run_benchmark
+from .reports import export_evaluation_reports
 
-
-def _export_v11_workbooks() -> None:
-    root = Path(__file__).resolve().parents[1]
-    script = root / ".artifact_work" / "build_v11.mjs"
-    bundled_node = Path.home() / ".cache" / "codex-runtimes" / "codex-primary-runtime" / "dependencies" / "node" / "bin" / "node.exe"
-    if not script.exists() or not bundled_node.exists():
-        raise RuntimeError("缺少本地 Excel 导出组件；请确认 Codex 工作区依赖和 .artifact_work/build_v11.mjs 可用。")
-    for dataset in ("FinanceBench", "LongDocURL"):
-        subprocess.run([str(bundled_node), str(script), dataset], cwd=root, check=True)
 
 
 def main() -> None:
@@ -47,10 +37,11 @@ def main() -> None:
         print(f"已建立索引：{summary}")
     elif args.command == "evaluate":
         selected_ids = set(args.question_ids) if args.question_ids else None
-        for path in run_benchmark(question_ids=selected_ids, rerun_completed=args.rerun_completed):
-            print(f"评测诊断记录：{path}")
-        if selected_ids is None:
-            _export_v11_workbooks()
+        checkpoints = run_benchmark(question_ids=selected_ids, rerun_completed=args.rerun_completed)
+        for path in checkpoints:
+            print(f"Checkpoint: {path}")
+            for report_path in export_evaluation_reports(path):
+                print(f"Evaluation report: {report_path}")
     elif args.command == "ask":
         answer, evidence = ask(args.question)
         print(answer)
